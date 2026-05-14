@@ -1,6 +1,7 @@
 # ☆ Cyberpunk_Calculator
 
 A beautiful, fully functional calculator with a **cyberpunk lavender neon** theme. Built with pure HTML, CSS, and JavaScript — no frameworks needed!
+
 ![Theme](https://img.shields.io/badge/theme-cyberpunk%20lavender-purple)
 ![Built With](https://img.shields.io/badge/built%20with-HTML%20%7C%20CSS%20%7C%20JS-orange)
 

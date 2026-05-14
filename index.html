@@ -1,28 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--
-  Cyberpunk Calculator
-  Created by Muntaha
-  GitHub: https://github.com/YOUR_USERNAME
-  Licensed under MIT License
-  Do not remove this attribution.
-  -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cyberpunk Calculator</title>
+
+    <!-- Open Graph / Social Media Preview Meta Tags -->
     <meta property="og:title" content="Cyberpunk Calculator">
     <meta property="og:description" content="A beautiful cyberpunk lavender neon calculator built by Muntaha. Fully functional with keyboard support!">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://muntahahahah.github.io/cyberpunk_calculator/">
-    <meta property="og:image" content="https://muntahahahah.github.io/cyberpunk_calculator/preview.png">
+    <meta property="og:url" content="https://muntahahahah.github.io/Cyberpunk_Calculator/">
+    <meta property="og:image" content="https://muntahahahah.github.io/Cyberpunk_Calculator/preview.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cyberpunk Calculator">
     <meta name="twitter:description" content="A beautiful cyberpunk lavender neon calculator built by Muntaha.">
-    <meta name="twitter:image" content="https://muntahahahah.github.io/cyberpunk_calculator/preview.png">
+    <meta name="twitter:image" content="https://muntahahahah.github.io/Cyberpunk_Calculator/preview.png">
     <meta name="theme-color" content="#7c3aed">
+
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
     <style>
         * {
@@ -141,7 +137,7 @@
                 linear-gradient(90deg, transparent 70%, rgba(236, 72, 153, 0.08) 80%, transparent 90%);
         }
 
-        /* Main calculator window - REDUCED SIZE */
+        /* Main calculator window - DESKTOP SIZE */
         .calculator-window {
             position: relative;
             z-index: 10;
@@ -157,6 +153,36 @@
                 0 20px 60px rgba(0, 0, 0, 0.9);
             overflow: hidden;
             flex-shrink: 0;
+            transform-origin: center center;
+        }
+
+        /* MOBILE: Scale down the entire calculator proportionally */
+        @media (max-width: 400px) {
+            .calculator-window {
+                transform: scale(0.85);
+                margin: 0 -25px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .calculator-window {
+                transform: scale(0.78);
+                margin: 0 -35px;
+            }
+        }
+
+        @media (max-width: 340px) {
+            .calculator-window {
+                transform: scale(0.72);
+                margin: 0 -45px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .calculator-window {
+                transform: scale(0.68);
+                margin: 0 -52px;
+            }
         }
 
         /* Window title bar */
@@ -399,6 +425,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            white-space: nowrap;
         }
 
         .btn::before {
@@ -565,6 +592,14 @@
 <base target="_blank">
 </head>
 <body>
+    <!--
+      Cyberpunk Calculator
+      Created by Muntaha
+      GitHub: https://github.com/muntahahahah
+      Licensed under MIT License
+      Do not remove this attribution.
+    -->
+
     <!-- Animated starfield -->
     <div class="stars-bg" id="starsBg"></div>
 
@@ -606,7 +641,7 @@
                     <h1 class="main-title">CYBERPUNK CALCULATOR</h1>
                     <span class="title-star">☆</span>
                 </div>
-                <p class="subtitle">✧✧𝘉𝘠 𝘔𝘜𝘕𝘛𝘈𝘏𝘈✧✧</p>
+                <p class="subtitle">✧✧ ~BY MUNTAHA ✧✧</p>
             </div>
 
             <!-- Display -->

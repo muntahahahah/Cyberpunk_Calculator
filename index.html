@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+  Cyberpunk Calculator
+  Created by Muntaha
+  GitHub: https://github.com/YOUR_USERNAME
+  Licensed under MIT License
+  Do not remove this attribution.
+  -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cyberpunk Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: #0a0a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Press Start 2P', cursive;
+            padding: 0;
+        }
+
+        /* Animated starfield background */
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+            box-shadow: 0 0 4px rgba(200, 180, 255, 0.8);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(200, 180, 255, 0.8), transparent);
+            animation: shoot 4s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(-100px) translateY(0) rotate(-45deg); opacity: 0; }
+            10% { opacity: 1; }
+            20% { transform: translateX(300px) translateY(-300px) rotate(-45deg); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* Planet decoration */
+        .planet {
+            position: fixed;
+            top: 60px;
+            right: 30px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #a855f7, #7c3aed, #4c1d95);
+            box-shadow: 
+                0 0 40px rgba(168, 85, 247, 0.4),
+                inset -10px -10px 30px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            z-index: 1;
+            animation: planetPulse 6s ease-in-out infinite;
+        }
+
+        .planet::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1px solid rgba(200, 180, 255, 0.15);
+        }
+
+        @keyframes planetPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        /* City silhouette at bottom */
+        .city-silhouette {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 140px;
+            background: linear-gradient(180deg, transparent 0%, rgba(10, 5, 20, 0.7) 40%, #0a0515 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .city-lights {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: 
+                linear-gradient(90deg, transparent 5%, rgba(124, 58, 237, 0.08) 15%, transparent 25%),
+                linear-gradient(90deg, transparent 70%, rgba(236, 72, 153, 0.08) 80%, transparent 90%);
+        }
+
+        /* Main calculator window - REDUCED SIZE */
+        .calculator-window {
+            position: relative;
+            z-index: 10;
+            width: 340px;
+            min-width: 340px;
+            max-width: 340px;
+            background: linear-gradient(180deg, #1a0a2e 0%, #0d0618 100%);
+            border-radius: 20px;
+            border: 2px solid rgba(180, 140, 255, 0.35);
+            box-shadow: 
+                0 0 50px rgba(140, 100, 255, 0.25),
+                inset 0 0 60px rgba(100, 50, 200, 0.12),
+                0 20px 60px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        /* Window title bar */
+        .title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.35);
+            border-bottom: 1px solid rgba(180, 140, 255, 0.25);
+        }
+
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .star-icon {
+            color: #c8b4ff;
+            font-size: 13px;
+            text-shadow: 0 0 10px rgba(200, 180, 255, 0.9);
+        }
+
+        .window-title {
+            color: #c8b4ff;
+            font-size: 10px;
+            font-family: 'Noto Sans JP', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .window-btn {
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            border: 1px solid rgba(180, 140, 255, 0.5);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .window-btn:hover {
+            background: rgba(180, 140, 255, 0.25);
+        }
+
+        /* Calculator body */
+        .calculator-body {
+            padding: 18px 22px 22px;
+            position: relative;
+        }
+
+        /* Decorative moon */
+        .deco-moon {
+            position: absolute;
+            top: 10px;
+            right: 40px;
+            font-size: 22px;
+            color: #b794f6;
+            text-shadow: 0 0 15px rgba(183, 148, 246, 0.7);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Title section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        .deco-stars-top {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            font-size: 9px;
+            color: #c8b4ff;
+            opacity: 0.7;
+        }
+
+        .main-title {
+            font-size: 20px;
+            color: #e0d0ff;
+            text-shadow: 
+                0 0 10px rgba(200, 180, 255, 0.9),
+                0 0 25px rgba(150, 100, 255, 0.5);
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .title-stars {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .title-star {
+            color: #c8b4ff;
+            font-size: 14px;
+            text-shadow: 0 0 10px rgba(200, 180, 255, 0.7);
+        }
+
+        .orbit-line {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200, 180, 255, 0.35), transparent);
+        }
+
+        .subtitle {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 10px;
+            color: #b794f6;
+            letter-spacing: 2px;
+            opacity: 0.85;
+        }
+
+        /* Display screen */
+        .display-container {
+            background: linear-gradient(180deg, #0a0515 0%, #050310 100%);
+            border: 2px solid rgba(180, 140, 255, 0.35);
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-bottom: 14px;
+            position: relative;
+            box-shadow: 
+                inset 0 0 18px rgba(100, 50, 200, 0.12),
+                0 0 18px rgba(100, 50, 200, 0.15);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .display-star {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            font-size: 16px;
+            color: #d8b4fe;
+            text-shadow: 0 0 10px rgba(216, 180, 254, 0.7);
+        }
+
+        .display-star-right {
+            position: absolute;
+            top: 6px;
+            right: 12px;
+            font-size: 12px;
+            color: #d8b4fe;
+            text-shadow: 0 0 10px rgba(216, 180, 254, 0.7);
+        }
+
+        .display {
+            text-align: right;
+            color: #e0d0ff;
+            font-size: 26px;
+            word-break: break-all;
+            text-shadow: 0 0 10px rgba(200, 180, 255, 0.6);
+            width: 100%;
+        }
+
+        .display.error {
+            color: #ff6b9d;
+            text-shadow: 0 0 10px rgba(255, 107, 157, 0.6);
+            font-size: 13px;
+        }
+
+        /* Decorative divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding: 0 4px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(180, 140, 255, 0.5), transparent);
+        }
+
+        .divider-stars {
+            display: flex;
+            gap: 6px;
+            font-size: 9px;
+            color: #c8b4ff;
+            opacity: 0.7;
+        }
+
+        .divider-icons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .divider-icon {
+            font-size: 13px;
+            color: #d8b4fe;
+            text-shadow: 0 0 8px rgba(216, 180, 254, 0.6);
+        }
+
+        /* Button grid */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 9px;
+        }
+
+        .btn {
+            position: relative;
+            border: none;
+            border-radius: 13px;
+            padding: 14px 6px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            overflow: hidden;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 13px;
+            padding: 2px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.25), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 13px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.15);
+            pointer-events: none;
+        }
+
+        /* Number buttons - purple */
+        .btn-number {
+            background: linear-gradient(180deg, #7c3aed 0%, #5b21b6 100%);
+            color: #e0d0ff;
+            border: 1px solid rgba(180, 140, 255, 0.35);
+            box-shadow: 
+                0 4px 10px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(124, 58, 237, 0.25),
+                inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+
+        .btn-number:hover {
+            background: linear-gradient(180deg, #8b5cf6 0%, #6d28d9 100%);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.6),
+                0 0 25px rgba(139, 92, 246, 0.5),
+                inset 0 1px 0 rgba(255,255,255,0.18);
+            transform: translateY(-1px);
+        }
+
+        .btn-number:active {
+            transform: translateY(1px);
+            box-shadow: 
+                0 2px 5px rgba(0, 0, 0, 0.5),
+                0 0 10px rgba(124, 58, 237, 0.25);
+        }
+
+        /* Operator buttons - pink */
+        .btn-operator {
+            background: linear-gradient(180deg, #ec4899 0%, #be185d 100%);
+            color: #ffe0f0;
+            border: 1px solid rgba(255, 150, 200, 0.35);
+            box-shadow: 
+                0 4px 10px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(236, 72, 153, 0.25),
+                inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+
+        .btn-operator:hover {
+            background: linear-gradient(180deg, #f472b6 0%, #db2777 100%);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.6),
+                0 0 25px rgba(244, 114, 182, 0.5),
+                inset 0 1px 0 rgba(255,255,255,0.18);
+            transform: translateY(-1px);
+        }
+
+        .btn-operator:active {
+            transform: translateY(1px);
+            box-shadow: 
+                0 2px 5px rgba(0, 0, 0, 0.5),
+                0 0 10px rgba(236, 72, 153, 0.25);
+        }
+
+        /* Equals button - cyan/teal */
+        .btn-equals {
+            background: linear-gradient(180deg, #06b6d4 0%, #0891b2 100%);
+            color: #e0ffff;
+            border: 1px solid rgba(100, 230, 255, 0.35);
+            box-shadow: 
+                0 4px 10px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(6, 182, 212, 0.25),
+                inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+
+        .btn-equals:hover {
+            background: linear-gradient(180deg, #22d3ee 0%, #06b6d4 100%);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.6),
+                0 0 25px rgba(34, 211, 238, 0.5),
+                inset 0 1px 0 rgba(255,255,255,0.18);
+            transform: translateY(-1px);
+        }
+
+        .btn-equals:active {
+            transform: translateY(1px);
+            box-shadow: 
+                0 2px 5px rgba(0, 0, 0, 0.5),
+                0 0 10px rgba(6, 182, 212, 0.25);
+        }
+
+        /* Special buttons - pink (AC, backspace) */
+        .btn-special {
+            background: linear-gradient(180deg, #ec4899 0%, #be185d 100%);
+            color: #ffe0f0;
+            border: 1px solid rgba(255, 150, 200, 0.35);
+            box-shadow: 
+                0 4px 10px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(236, 72, 153, 0.25),
+                inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+
+        .btn-special:hover {
+            background: linear-gradient(180deg, #f472b6 0%, #db2777 100%);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.6),
+                0 0 25px rgba(244, 114, 182, 0.5),
+                inset 0 1px 0 rgba(255,255,255,0.18);
+            transform: translateY(-1px);
+        }
+
+        .btn-special:active {
+            transform: translateY(1px);
+            box-shadow: 
+                0 2px 5px rgba(0, 0, 0, 0.5),
+                0 0 10px rgba(236, 72, 153, 0.25);
+        }
+
+        /* Star decorations on buttons */
+        .btn-star {
+            position: absolute;
+            font-size: 7px;
+            color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+            text-shadow: 0 0 3px rgba(255,255,255,0.3);
+        }
+
+        .btn-star-tl { top: 4px; left: 6px; }
+        .btn-star-tr { top: 4px; right: 6px; }
+        .btn-star-bl { bottom: 4px; left: 6px; }
+        .btn-star-br { bottom: 4px; right: 6px; }
+
+        /* Zero button spans 2 columns */
+        .btn-zero {
+            grid-column: span 2;
+        }
+
+        /* Button press animation */
+        @keyframes btnPress {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.92); }
+            100% { transform: scale(1); }
+        }
+
+        .btn.pressed {
+            animation: btnPress 0.15s ease;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- Animated starfield -->
+    <div class="stars-bg" id="starsBg"></div>
+
+    <!-- Planet decoration -->
+    <div class="planet"></div>
+
+    <!-- City silhouette -->
+    <div class="city-silhouette">
+        <div class="city-lights"></div>
+    </div>
+
+    <!-- Main Calculator -->
+    <div class="calculator-window">
+        <!-- Title Bar -->
+        <div class="title-bar">
+            <div class="title-left">
+                <span class="star-icon">★</span>
+                <span class="window-title">Cyberpunk Calculator</span>
+            </div>
+            <div class="window-controls">
+                <div class="window-btn"></div>
+                <div class="window-btn"></div>
+                <div class="window-btn"></div>
+            </div>
+        </div>
+
+        <!-- Calculator Body -->
+        <div class="calculator-body">
+            <!-- Decorative moon -->
+            <div class="deco-moon">☾</div>
+
+            <!-- Title Section -->
+            <div class="title-section">
+                <div class="deco-stars-top">
+                    <span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span>
+                </div>
+                <div class="title-stars">
+                    <span class="title-star">☆</span>
+                    <h1 class="main-title">CYBERPUNK CALCULATOR</h1>
+                    <span class="title-star">☆</span>
+                </div>
+                <p class="subtitle">✧✧𝘉𝘠 𝘔𝘜𝘕𝘛𝘈𝘏𝘈✧✧</p>
+            </div>
+
+            <!-- Display -->
+            <div class="display-container">
+                <span class="display-star">☆</span>
+                <span class="display-star-right">✦</span>
+                <div class="display" id="display">0</div>
+            </div>
+
+            <!-- Divider -->
+            <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-stars">
+                    <span>✦</span><span>✦</span><span>✦</span>
+                </div>
+                <div class="divider-icons">
+                    <span class="divider-icon">☽</span>
+                    <span class="divider-icon">♡</span>
+                    <span class="divider-icon">☁</span>
+                </div>
+                <div class="divider-stars">
+                    <span>✦</span><span>✦</span><span>✦</span>
+                </div>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Button Grid -->
+            <div class="button-grid">
+                <button class="btn btn-special" onclick="clearAll()">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    AC
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-special" onclick="backspace()">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    ⌫
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-operator" onclick="appendOperator('%')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    %
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-operator" onclick="appendOperator('/')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    ÷
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+
+                <button class="btn btn-number" onclick="appendNumber('7')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    7
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-number" onclick="appendNumber('8')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    8
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-number" onclick="appendNumber('9')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    9
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-operator" onclick="appendOperator('*')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    ×
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+
+                <button class="btn btn-number" onclick="appendNumber('4')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    4
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-number" onclick="appendNumber('5')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    5
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-number" onclick="appendNumber('6')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    6
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-operator" onclick="appendOperator('-')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    −
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+
+                <button class="btn btn-number" onclick="appendNumber('1')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    1
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-number" onclick="appendNumber('2')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    2
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-number" onclick="appendNumber('3')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    3
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-operator" onclick="appendOperator('+')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    +
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+
+                <button class="btn btn-number btn-zero" onclick="appendNumber('0')">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    0
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-number" onclick="appendDecimal()">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    .
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+                <button class="btn btn-equals" onclick="calculate()">
+                    <span class="btn-star btn-star-tl">✦</span>
+                    <span class="btn-star btn-star-tr">✦</span>
+                    =
+                    <span class="btn-star btn-star-bl">✦</span>
+                    <span class="btn-star btn-star-br">✦</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate animated stars background
+        function generateStars() {
+            const container = document.getElementById('starsBg');
+            const starCount = 100;
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (2 + Math.random() * 3) + 's';
+
+                const size = 1 + Math.random() * 2.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+
+                const colors = ['#c8b4ff', '#d8b4fe', '#e9d5ff', '#f3e8ff', '#ffffff'];
+                star.style.background = colors[Math.floor(Math.random() * colors.length)];
+                star.style.boxShadow = `0 0 ${4 + Math.random() * 8}px ${star.style.background}`;
+
+                container.appendChild(star);
+            }
+
+            for (let i = 0; i < 3; i++) {
+                const shooting = document.createElement('div');
+                shooting.className = 'shooting-star';
+                shooting.style.top = Math.random() * 50 + '%';
+                shooting.style.left = Math.random() * 50 + '%';
+                shooting.style.animationDelay = (i * 2.5) + 's';
+                shooting.style.animationDuration = (3 + Math.random() * 2) + 's';
+                container.appendChild(shooting);
+            }
+        }
+
+        generateStars();
+
+        // Calculator logic
+        let currentInput = '0';
+        let hasError = false;
+
+        const display = document.getElementById('display');
+
+        function updateDisplay() {
+            display.textContent = currentInput;
+            display.classList.toggle('error', hasError);
+        }
+
+        function clearAll() {
+            currentInput = '0';
+            hasError = false;
+            updateDisplay();
+        }
+
+        function backspace() {
+            if (hasError) {
+                clearAll();
+                return;
+            }
+            if (currentInput.length === 1 || (currentInput.length === 2 && currentInput[0] === '-')) {
+                currentInput = '0';
+            } else {
+                currentInput = currentInput.slice(0, -1);
+            }
+            updateDisplay();
+        }
+
+        function appendNumber(num) {
+            if (hasError) {
+                clearAll();
+            }
+            if (currentInput === '0') {
+                currentInput = num;
+            } else if (currentInput.length < 14) {
+                currentInput += num;
+            }
+            updateDisplay();
+        }
+
+        function appendDecimal() {
+            if (hasError) {
+                clearAll();
+            }
+            const parts = currentInput.split(/[+\-*/]/);
+            const lastPart = parts[parts.length - 1];
+            if (!lastPart.includes('.')) {
+                currentInput += '.';
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            if (hasError) {
+                clearAll();
+                return;
+            }
+
+            const lastChar = currentInput[currentInput.length - 1];
+            const operators = ['+', '-', '*', '/', '%'];
+
+            if (operators.includes(lastChar)) {
+                currentInput = currentInput.slice(0, -1) + op;
+            } else {
+                currentInput += op;
+            }
+            updateDisplay();
+        }
+
+        function calculate() {
+            if (hasError) {
+                clearAll();
+                return;
+            }
+
+            try {
+                let expression = currentInput;
+
+                expression = expression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+
+                if (/[+\-*/%]{2,}/.test(expression)) {
+                    throw new Error('Invalid');
+                }
+
+                if (/[+\-*/%]$/.test(expression)) {
+                    expression = expression.slice(0, -1);
+                }
+
+                if (!expression || expression === '-') {
+                    return;
+                }
+
+                const result = Function('"use strict"; return (' + expression + ')')();
+
+                if (!isFinite(result)) {
+                    throw new Error('Error');
+                }
+
+                let formatted = parseFloat(result.toPrecision(12)).toString();
+
+                if (formatted.length > 14) {
+                    formatted = parseFloat(result).toExponential(6);
+                }
+
+                currentInput = formatted;
+                hasError = false;
+                updateDisplay();
+
+            } catch (e) {
+                currentInput = 'Error';
+                hasError = true;
+                updateDisplay();
+            }
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+
+            if (key >= '0' && key <= '9') {
+                appendNumber(key);
+                animateButton(key);
+            } else if (key === '.') {
+                appendDecimal();
+                animateButton('.');
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                appendOperator(key);
+                animateButton(key);
+            } else if (key === '%') {
+                appendOperator('%');
+                animateButton('%');
+            } else if (key === 'Enter' || key === '=') {
+                e.preventDefault();
+                calculate();
+                animateButton('=');
+            } else if (key === 'Backspace') {
+                backspace();
+                animateButton('⌫');
+            } else if (key === 'Escape') {
+                clearAll();
+                animateButton('AC');
+            }
+        });
+
+        function animateButton(text) {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes(text)) {
+                    btn.classList.add('pressed');
+                    setTimeout(() => btn.classList.remove('pressed'), 150);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

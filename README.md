@@ -2,11 +2,11 @@
 
 A beautiful, fully functional calculator with a **cyberpunk lavender neon** theme. Built with pure HTML, CSS, and JavaScript — no frameworks needed!
 
+## 🚀 Live Demo
+**[Click here to use the calculator!](https://muntahahahah.github.io/Cyberpunk_Calculator/)**
+
 ![Theme](https://img.shields.io/badge/theme-cyberpunk%20lavender-purple)
 ![Built With](https://img.shields.io/badge/built%20with-HTML%20%7C%20CSS%20%7C%20JS-orange)
-
-## 🚀 Live Demo
-**[Click here to use the calculator!](https://muntahahahah.github.io/cyberpunk_calculator/)**
 
 ## ── ⋆⋅☆⋅⋆ ──Features── ⋆⋅☆⋅⋆ ──
 - —͟͟͞͞★ Animated starfield background with twinkling stars & shooting stars
